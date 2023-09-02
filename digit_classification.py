@@ -7,21 +7,14 @@ class DigitClassification:
         self.model = None
         self.datasets = None
         self.digits = None
-        self.data = None
         self.clf = None
-        self.x_train = None
-        self.x_val = None
-        self.x_test = None
-        self.y_train = None
-        self.y_val = None
-        self.y_test = None
-        None
 
     def load_dataset(self):
         self.datasets = datasets
 
     def load_digit_data(self):
         self.digits = self.datasets.load_digits()
+        return self.digits.images, self.digits.target
     
     def initiate_svm(self, gamma):
         self.clf = svm.SVC(gamma=gamma)
@@ -34,34 +27,35 @@ class DigitClassification:
             ax.imshow(image, cmap=plt.cm.gray_r, interpolation="nearest")
             ax.set_title(f"{execution}: %i" % label)
 
-    def pre_process(self):
-        n_samples = len(self.digits.images)
-        self.data = self.digits.images.reshape((n_samples, -1))
+    def pre_process(self, data):
+        n_samples = len(data)
+        return self.digits.images.reshape((n_samples, -1))
 
-    def split_data(self, test_split_ratio):
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(
-        self.data, self.digits.target, test_size=test_split_ratio, shuffle=False,random_state=random_state
+    def split_data(self, x, y, test_split_ratio, random_state=42):
+        x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=test_split_ratio, shuffle=False,random_state=random_state
         )
 
-        return self.x_train, self.x_test, self.y_train, self.y_test 
+        return x_train, x_test, y_train, y_test 
 
-    def train_model(self):
-        self.clf.fit(self.x_train, self.y_train)
+    def train_model(self, x_train, y_train):
+        self.clf.fit(x_train, y_train)
 
     def predict(self, x_test=None):
-        if type(x_test) != type(None):
-            return self.clf.predict(self.x_test)
+        return self.clf.predict(x_test)
     
-    def print_classification_report(self, y_predicted, y_true):
+    def print_classification_report(self, y_predicted, y_true, data_name=""):
         print(
             f"Classification report for classifier {self.clf}:\n"
+            f"on {data_name} " if data_name != "" else "" + "\n"
             f"{metrics.classification_report(y_predicted, y_true)}\n"
         )
     
-    def display_confusion_matrix(self, y_predicted, y_true):
+    def display_confusion_matrix(self, y_predicted, y_true, data_name=""):
         disp = metrics.ConfusionMatrixDisplay.from_predictions(y_true, y_predicted)
         disp.figure_.suptitle("Confusion Matrix")
         print(f"Confusion matrix:\n{disp.confusion_matrix}")
+        print(f"on {data_name} " if data_name != "" else "" + "\n")
         plt.show()
         y_true = []
         y_pred = []
@@ -74,9 +68,9 @@ class DigitClassification:
         
         self.print_classification_report(y_true, y_pred)
 
-    def split_train_dev_test(X, y, test_size, dev_size, random_state=1):
+    def split_data_train_dev_test(self, X, y, dev_size, test_size, random_state=42):
         # Split data into train and test subsets
-        self.X_train, self.X_test, y_train, y_test = train_test_split(
+        x_train, x_test, y_train, y_test = train_test_split(
             X, y, test_size=test_size, random_state=random_state
         )
 
@@ -85,14 +79,8 @@ class DigitClassification:
         dev_relative_size = dev_size / remaining_size
 
         # Split the train data into train and development subsets
-        X_train_final, X_dev, y_train_final, y_dev = train_test_split(
-            X_train, y_train, test_size=dev_relative_size, random_state=random_state
+        x_train, x_dev, y_train, y_dev = train_test_split(
+            x_train, y_train, test_size=dev_relative_size, random_state=random_state
         )
 
-        return X_train_final, X_dev, X_test, y_train_final, y_dev, y_test
-
-    # def predict_and_eval(model, X_test, y_test):
-    #     print(
-    #     f"Classification report for classifier {model}:\n"
-    #     f"{metrics.classification_report(y_test, X_test)}\n"
-    #     )
+        return x_train, x_dev, x_test, y_train, y_dev, y_test
