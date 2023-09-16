@@ -22,4 +22,5 @@ jobs:
         run:  pip3 install --no-cache-dir -r requirements.txt
       - name: Run test cases
         run:
-          python hyper_param_tuning.py
+          # python hyper_param_tuning.py
+          pytest
