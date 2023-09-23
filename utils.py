@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
+import cv2
 
 class DigitClassification:
     def __init__(self) -> None:
@@ -75,6 +76,13 @@ class DigitClassification:
                 y_pred += [pred] * cm[gt][pred]
         
         self.print_classification_report(y_true, y_pred)
+
+    def image_resize(self, X, size=(8, 8)):
+        resized_images = []
+        for image in X:
+            resize_image = cv2.resize(image, size).reshape(-1)
+            resized_images.append(resize_image)
+        return resized_images
 
     def split_data_train_dev_test(self, X, y, dev_size, test_size, random_state=42):
         # Split data into train and test subsets
