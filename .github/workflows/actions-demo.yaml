@@ -24,4 +24,4 @@ jobs:
       - name: Run test cases
         run:
           # python hyper_param_tuning.py
-          python experiments_modular.py
+          python quiz2.py
