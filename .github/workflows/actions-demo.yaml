@@ -23,5 +23,4 @@ jobs:
       - run: echo "echo from quiz"
       - name: Run test cases
         run:
-          # python hyper_param_tuning.py
-          python quiz2.py
+          ./docker_run.sh
