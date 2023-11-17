@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import cv2
+import pickle
 
 class DigitClassification:
     def __init__(self) -> None:
@@ -150,3 +151,8 @@ class DigitClassification:
         test_acc = self.predict_and_eval(X_test, y_test)
         print("Test accuracy: ", test_acc)
         return best_model, optimal_gamma, optimal_C
+
+    def save_model(self, path="model.pkl"):
+        with open(path, "wb") as f:
+            pickle.dump(self.clf, f)
+        print(f"Sucessfully saved model at location: {path}")

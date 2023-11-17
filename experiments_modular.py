@@ -18,4 +18,5 @@ X_train, X_dev, X_test, y_train, y_val, y_test  = digit_classification.split_dat
 y_dev_predicted = digit_classification.predict(X_dev)
 digit_classification.print_classification_report(y_dev_predicted, y_test, "dev-set")
 digit_classification.display_confusion_matrix(y_dev_predicted, y_test, "dev-set")
+digit_classification.save_model("./saved_model/model.pkl")
 print("Complete")
